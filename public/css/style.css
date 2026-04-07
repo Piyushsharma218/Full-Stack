@@ -1,0 +1,52 @@
+/* body{
+    background-color: #212121;
+} */
+
+.navbar{
+    height: 5rem;
+    background-color: white;
+}
+
+.fa-compass{
+    color: #fa424d;
+    font-size: 2rem;
+}
+
+.nav-link{
+    color: #222222 !important;
+}
+.f-info-links a{
+    text-decoration: none;
+    color: #222222;
+    /* width: 100%; */
+}
+
+.f-info-socials {
+    /* background-color: red; */
+    width: 100%;
+    font-size: 1.5rem;
+}
+
+.f-info-socials i {
+   margin: 0.5rem;
+}
+
+.f-info-links{
+    width: 100%;
+}
+
+.f-info-links a:hover{  
+    text-decoration: underline;
+    
+}
+.f-info{
+    text-align: center ;
+    height: 8rem;
+    display: flex;
+    background-color: #ebebeb;
+    justify-content: center;
+    align-items: space-evenly;
+    /* flex-direction: column; */
+    flex-wrap: wrap;
+    /* gap: 1rem; */
+}
