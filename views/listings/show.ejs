@@ -1,6 +1,15 @@
 <% layout("/layouts/boilerplate") %>
   <body>
     <h3>Listing Details:</h3>
+    <% if(listing.image && listing.image.url) { %>
+      <div style="margin-bottom: 20px;">
+        <img src="<%=listing.image.url%>" alt="<%=listing.title%>" onerror="this.src='https://thumbs.dreamstime.com/b/city-park-pond-shore-alley-20238927.jpg'" style="max-width: 100%; height: auto;">
+      </div>
+    <% } else { %>
+      <div style="margin-bottom: 20px;">
+        <img src="https://thumbs.dreamstime.com/b/city-park-pond-shore-alley-20238927.jpg" alt="Fallback image" style="max-width: 100%; height: auto;">
+      </div>
+    <% } %>
     <ul>
       <li><%=listing.title%></li>
       <li><%=listing.description%></li>
