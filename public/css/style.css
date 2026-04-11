@@ -103,5 +103,10 @@ body{
 }
 .edit-btn{
     background-color: #fa424d !important;
+    margin-left: 9rem !important;
 
+}
+.delete_btn{
+    margin-left: 9rem !important;
+    border: none !important;
 }
