@@ -2,12 +2,13 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
+const Review = require("./models/reviews.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const { listingsSchema } = require("./schema.js");
+const { listingsSchema, reviewSchema } = require("./schema.js");
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -37,12 +38,24 @@ app.get("/", (req, res) => {
 });
 
 const validateListing = (req, res, next) => {
-  let {error} = listingsSchema.validate(req.body);
-  
+  let { error } = listingsSchema.validate(req.body);
+
   if (error) {
+    let errMsg = error.details.map((el) => el.message).join(",");
     throw new ExpressError(400, result.error);
-  } else{
-    next()
+  } else {
+    next();
+  }
+};
+
+const validateReview = (req, res, next) => {
+  let { error } = reviewSchema.validate(req.body);
+
+  if (error) {
+    let errMsg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, result.error);
+  } else {
+    next();
   }
 };
 
@@ -108,6 +121,24 @@ app.delete(
   }),
 );
 
+//review Post Rout
+app.post(
+  "/listings/:id/reviews",
+  validateReview,
+  wrapAsync(async (req, res) => {
+    let listing = await Listing.findById(req.params.id);
+    console.log(req.params);
+    let newreview = new Review(req.body.review);
+
+    listing.reviews.push(newreview);
+
+    await newreview.save();
+    await listing.save();
+
+    res.redirect(`/listings/${listing.id}`);
+  }),
+);
+
 //   app.get("/testListing", async (req, res) => {
 //     const sampleListing = new Listing({
 //       title: "My New Villa",
@@ -136,4 +167,3 @@ app.use((err, req, res, next) => {
 app.listen(8080, () => {
   console.log("server is listening to port 8080");
 });
-
