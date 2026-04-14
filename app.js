@@ -9,7 +9,8 @@ const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
 const { listingsSchema, reviewSchema } = require("./schema.js");
-
+const listings = require("./routes/listing.js");
+ 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.engine("ejs", ejsMate);
@@ -37,16 +38,7 @@ app.get("/", (req, res) => {
   res.send("hi i am root");
 });
 
-const validateListing = (req, res, next) => {
-  let { error } = listingsSchema.validate(req.body);
 
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, result.error);
-  } else {
-    next();
-  }
-};
 
 const validateReview = (req, res, next) => {
   let { error } = reviewSchema.validate(req.body);
@@ -59,69 +51,8 @@ const validateReview = (req, res, next) => {
   }
 };
 
-app.get(
-  "/listings",
-  wrapAsync(async (req, res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index.ejs", { allListings });
-  }),
-);
+app.use("/listings",listings)
 
-app.get("/listings/new", (req, res) => {
-  res.render("listings/new.ejs");
-});
-
-
-//show route
-app.get(
-  "/listings/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
-    res.render("listings/show.ejs", { listing });
-  }),
-);
-//create route
-app.post(
-  "/listings",
-  validateListing,
-  wrapAsync(async (req, res, next) => {
-    const newListing = new Listing(req.body.listing);
-    await newListing.save();
-    res.redirect("/listings");
-  }),
-);
-
-//edit route
-app.get(
-  "/listings/:id/edit",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/edit.ejs", { listing });
-  }),
-);
-
-//update route
-app.put(
-  "/listings/:id",
-  validateListing,
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-    res.redirect(`/listings/${id}`);
-  }),
-);
-
-//delete route
-app.delete(
-  "/listings/:id",
-  wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    await Listing.findByIdAndDelete(id);
-    res.redirect("/listings");
-  }),
-);
 
 //review Post Rout
 app.post(
