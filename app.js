@@ -71,11 +71,13 @@ app.get("/listings/new", (req, res) => {
   res.render("listings/new.ejs");
 });
 
+
+//show route
 app.get(
   "/listings/:id",
   wrapAsync(async (req, res) => {
     let { id } = req.params;
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("reviews");
     res.render("listings/show.ejs", { listing });
   }),
 );
@@ -138,6 +140,15 @@ app.post(
     res.redirect(`/listings/${listing.id}`);
   }),
 );
+
+//delete Route review
+app.delete("/listings/:id/reviews/:reviewId", wrapAsync(async (req, res) => {
+  let { id, reviewId } = req.params;  
+  await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+  await Review.findByIdAndDelete(reviewId);
+  res.redirect(`/listings/${id}`);
+}));
+
 
 //   app.get("/testListing", async (req, res) => {
 //     const sampleListing = new Listing({
