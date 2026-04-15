@@ -5,8 +5,10 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError.js");
-const session=require("express-session")
-
+const session = require("express-session");
+const passport = require("passport");
+const localstrategy = require("passport-local");
+const user = require("./models/user.js");
 
 const listings = require("./routes/listing.js");
 const reveiws = require("./routes/review.js");
@@ -34,23 +36,23 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
-const sessionOptions={
-  secret:"mysupersecretcode",
-  resave:false,
-  saveUninitialized:true,
-  cookie:{
-    expires: Date.now()+7*24*60*60*1000,
-    maxAge:7*24*60*60*1000,
-    httpOnly:true
-  }
-}
+const sessionOptions = {
+  secret: "mysupersecretcode",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  },
+};
 
 app.use(session(sessionOptions));
+
 
 app.get("/", (req, res) => {
   res.send("hi i am root");
 });
-
 
 app.use("/listings", listings);
 app.use("/listings/:id/reviews", reveiws);
