@@ -33,7 +33,7 @@ router.post(
     await newreview.save();
     await listing.save();
 
-    res.redirect(`/listings/${listing.id}`);
+    res.redirect(`/listings/${listing._id}`);
   }),
 );
 

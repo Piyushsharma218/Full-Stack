@@ -33,7 +33,7 @@ router.post(
     failureFlash: true,
   }),
   async (req, res) => {
-    
+    res.send("logged in");
     res.redirect("/listings");
   },
 );
