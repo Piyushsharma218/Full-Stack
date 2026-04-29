@@ -3,7 +3,7 @@ const router = express.Router({mergeParams: true});
 const wrapasync = require("../utils/wrapAsync.js");
 const {validateReview, isLoggedIn, isReviewAuthor} = require("../middleware.js");
 
-const reviewController = require("../controllers/reviews.js");
+const reviewController = require("../controllers/review.js");
 
 
 router.post("/",isLoggedIn, validateReview,wrapasync(async (req, res, next) => {
