@@ -10,7 +10,7 @@ if (process.env.NODE_ENV != "production") {
   const ejsMate = require("ejs-mate");
   const ExpressError = require("./utils/ExpressError.js");
   const session = require("express-session");
-  const MongoStore = require("connect-mongo");
+  const MongoStore = require("connect-mongo").default;
   const flash = require("connect-flash");
   const passport = require("passport");
   const localStrategy = require("passport-local");
@@ -58,7 +58,7 @@ if (process.env.NODE_ENV != "production") {
     touchAfter: 24*3600,
   })
   
-  store.on("error", ()=>{
+  store.on("error", (err)=>{
     console.log("ERROR in MONGO SESSION STORE", err);
   })
   
@@ -99,9 +99,9 @@ if (process.env.NODE_ENV != "production") {
   
   // error handling
   
-  app.all("*", (req, res, next) => {
-    next(new ExpressError(404, "Page Not Found"));
-  });
+  app.use((req, res, next) => {
+  next(new ExpressError(404, "Page Not Found"));
+});
   
   app.use((err, req, res, next) => {
     let { statusCode = 500, message = "Something went wrong" } = err;
