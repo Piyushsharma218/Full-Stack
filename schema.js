@@ -1,6 +1,24 @@
 const Listing = require("./models/listing");
-const ExpressError = require("./utils/ExpressError.js"); 
-const{listingSchema,reviewSchema} = require("./schema.js");
+const ExpressError = require("./utils/ExpressError.js");
+const Joi = require("joi");
+
+const listingSchema = Joi.object({
+  listing: Joi.object({
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    location: Joi.string().required(),
+    country: Joi.string().required(),
+    price: Joi.number().required().min(0),
+    image: Joi.string().allow("", null),
+  }).required(),
+});
+
+const reviewSchema = Joi.object({
+  review: Joi.object({
+    rating: Joi.number().required().min(1).max(5),
+    comment: Joi.string().required(),
+  }).required(),
+});
 
 module.exports.isLoggedIn = (req, res, next) =>{
     if(!req.isAuthenticated()){
@@ -13,22 +31,29 @@ module.exports.isLoggedIn = (req, res, next) =>{
 }
 
 
-module.exports.saveRedirectUrl =(req, res, next)=> {
-    if(req, res, next) {
+module.exports.saveRedirectUrl = (req, res, next) => {
+    if (req.session.redirectUrl) {
         res.locals.redirectUrl = req.session.redirectUrl;
     }
-    next()
+    next();
 }
 
-module.exports.isOwner = async(req, res, next) =>{
+module.exports.isOwner = async (req, res, next) => {
     let { id } = req.params;
     let listing = await Listing.findById(id);
-    if(!listing.owner.equals(res.locals.currUser._id)){
-        req.flash("error","you are not the owner of this listing");
+
+    if (!listing) {
+        req.flash("error", "Listing not found");
+        return res.redirect("/listings");
+    }
+
+    if (!res.locals.currUser || !listing.owner.equals(res.locals.currUser._id)) {
+        req.flash("error", "You are not the owner of this listing");
         return res.redirect(`/listings/${id}`);
     }
-    next()
-}
+
+    next();
+};
 
 // validate listings 
 module.exports.validateListing = (req,res, next) =>{
@@ -53,3 +78,6 @@ module.exports.validateReview = (req, res, next) => {
         next();
     }
 }
+
+module.exports.listingSchema = listingSchema;
+module.exports.reviewSchema = reviewSchema;
