@@ -33,8 +33,6 @@ if (process.env.NODE_ENV != "production") {
     console.log("port is runing");
   });
   
-  // db connection
-  // MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
   const dbUrl = process.env.ATLASDB_URL;
   
   main()
@@ -42,7 +40,7 @@ if (process.env.NODE_ENV != "production") {
       console.log("mongodb connection success");
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err); 
     });
   async function main() {
     await mongoose.connect(dbUrl);
@@ -53,7 +51,7 @@ if (process.env.NODE_ENV != "production") {
   const store = MongoStore.create({
     mongoUrl: dbUrl,
     crypto:{
-      secret: "mysupersecretcode",
+      secret: process.env.SECRET,
     },
     touchAfter: 24*3600,
   })
